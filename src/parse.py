@@ -21,6 +21,9 @@ args.add_argument(
 args.add_argument(
     "-do", "--data-out", default="data/corpus.jsonl"
 )
+args.add_argument(
+    "-sss", "--skip-semantic-scholar", action="store_true"
+)
 args = args.parse_args()
 
 with open(args.data_publications, "r") as f:
@@ -54,6 +57,7 @@ LANG_MAP = {
     "sla": "sk",
     "lit": "lt",
 }
+stored_titles = set()
 
 stored_records = 0
 
@@ -63,6 +67,7 @@ for record in tqdm(list(data_pub.find_all("Record"))):
 
     # extract information from the XML
     lang = record.find("Field", attrs={"Name": "Language"}).text
+    year = record.find("Field", attrs={"Name": "Year"}).text
     abstract_cs = record.find("Field", attrs={"Name": "CzechAbstract"}).text
     abstract_en = record.find("Field", attrs={"Name": "EnglishAbstract"}).text
     abstract_orig = record.find(
@@ -73,10 +78,16 @@ for record in tqdm(list(data_pub.find_all("Record"))):
     title_orig = record.find("Field", attrs={"Name": "Title"}).text
     authors = record.find("Field", attrs={"Name": "Author"}).text.split(";")
 
+    title_hash = f"{title_en}|{title_cs}|{title_orig}|{authors}|{abstract_en}|{abstract_cs}|{abstract_orig}"
+    if title_hash in stored_titles:
+        continue
+    stored_titles.add(title_hash)
+
     # map language to standard 2-char format
     if lang in LANG_MAP:
         lang = LANG_MAP[lang]
     record_out["lang"] = lang
+    record_out["year"] = year
 
     # skip invalid language
     if lang == "":
@@ -110,17 +121,18 @@ for record in tqdm(list(data_pub.find_all("Record"))):
 
     record_out["authors"] = [author_map[a_id] for a_id in authors]
 
-    title_en_hash = "".join([c for c in title_en.lower() if c.isalpha()])
-    for paper_other in ss.search_paper(title_en):
-        title_hash_other = "".join([c for c in paper_other["title"].lower() if c.isalpha()])
-        if title_hash_other == title_en_hash:
-            print("Found a matching paper!", title_hash_other, title_en_hash)
-            record_out["SemanticScholar_paperId"] = paper_other["paperId"]
-            break
+    if not args.skip_semantic_scholar:
+        title_en_hash = "".join([c for c in title_en.lower() if c.isalpha()])
+        for paper_other in ss.search_paper(title_en):
+            title_hash_other = "".join([c for c in paper_other["title"].lower() if c.isalpha()])
+            if title_hash_other == title_en_hash:
+                print("Found a matching paper!", title_hash_other, title_en_hash)
+                record_out["SemanticScholar_paperId"] = paper_other["paperId"]
+                break
 
-    # delay to not trigger throttle
-    # by default 100 per 5 minutes -> 20 per minute -> 3 per second 
-    time.sleep(3.5)
+        # delay to not trigger throttle
+        # by default 100 per 5 minutes -> 20 per minute -> 3 per second 
+        time.sleep(3.5)
 
     fout.write(json.dumps(record_out, ensure_ascii=False) + "\n")
     stored_records += 1

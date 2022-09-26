@@ -1,3 +1,7 @@
 # ÚFAL Bilingual Abstract Corpus
 
-TODO
+TODO description 
+
+
+## Replicating results
+
