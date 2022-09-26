@@ -1,4 +1,4 @@
-# ÚFAL Bilingual Abstract Corpus
+# ÚFAL Bilingual Abstracts Corpus
 
 A bilingual dataset of 2657 abstracts mostly between English and Czech.
 TODO description 
