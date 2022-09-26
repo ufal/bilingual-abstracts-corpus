@@ -22,7 +22,7 @@ args.add_argument(
     "-do", "--data-out", default="data/corpus.jsonl"
 )
 args.add_argument(
-    "-sss", "--skip-semantic-scholar", action="store_true"
+    "-ss", "--semantic-scholar", action="store_true"
 )
 args = args.parse_args()
 
@@ -121,17 +121,19 @@ for record in tqdm(list(data_pub.find_all("Record"))):
 
     record_out["authors"] = [author_map[a_id] for a_id in authors]
 
-    if not args.skip_semantic_scholar:
+    if args.semantic_scholar:
         title_en_hash = "".join([c for c in title_en.lower() if c.isalpha()])
         for paper_other in ss.search_paper(title_en):
-            title_hash_other = "".join([c for c in paper_other["title"].lower() if c.isalpha()])
+            title_hash_other = "".join(
+                [c for c in paper_other["title"].lower() if c.isalpha()])
             if title_hash_other == title_en_hash:
-                print("Found a matching paper!", title_hash_other, title_en_hash)
+                print("Found a matching paper!",
+                      title_hash_other, title_en_hash)
                 record_out["SemanticScholar_paperId"] = paper_other["paperId"]
                 break
 
         # delay to not trigger throttle
-        # by default 100 per 5 minutes -> 20 per minute -> 3 per second 
+        # by default 100 per 5 minutes -> 20 per minute -> 3 per second
         time.sleep(3.5)
 
     fout.write(json.dumps(record_out, ensure_ascii=False) + "\n")
