@@ -11,12 +11,16 @@ wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-1731/c
 
 ## Replicating results
 
-To replicate the results, simply put `authors.xml` and `publications.xml` to `data/` and run the `parse.py` script.
-If you are also interested in links to SemanticScholar, you may get them by running `parse.py -ss` (please not much slower results).
+To replicate the results, simply put `authors.xml` and `publications.xml` to `data/` and run the `main.py` script.
+If you are also interested in links to SemanticScholar, you may get them by running `main.py -ss` (expect much slower runtime).
 
-You may also run `statistics.py` to show an overview of the generated file.
-The results should look similar to:
+The result of running the file should look close to:
 
 ```
-TODO
+Preprocessing authors
+...
+Processing main publication file
+...
+Total valid records: 2657
+Language distribution: [('en', 2086), ('cs', 548), ('ru', 13), ('de', 4), ('sk', 2), ('dsb', 2), ('fr', 1), ('lt', 1)]
 ```

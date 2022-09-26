@@ -1,1 +1,1 @@
-Put `publications.xml` and `authors.xml` in this folder and run `parse.py`.
+Put `publications.xml` and `authors.xml` in this folder and run `main.py`.
