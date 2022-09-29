@@ -7,7 +7,6 @@ import semanticscholar
 from tqdm import tqdm
 import time
 import argparse
-import collections
 
 ss = semanticscholar.SemanticScholar()
 re_collapse_whitespace = re.compile(" +")
@@ -60,7 +59,6 @@ LANG_MAP = {
 }
 
 stored_titles = set()
-langs = collections.Counter()
 stored_records = 0
 
 print("Processing main publication file")
@@ -130,8 +128,10 @@ for record in tqdm(list(data_pub.find_all("Record"))):
             title_hash_other = "".join(
                 [c for c in paper_other["title"].lower() if c.isalpha()])
             if title_hash_other == title_en_hash:
-                print("Found a matching paper!",
-                      title_hash_other, title_en_hash)
+                print(
+                    "Found a matching paper!",
+                    title_hash_other, title_en_hash
+                )
                 record_out["SemanticScholar_paperId"] = paper_other["paperId"]
                 break
 
@@ -140,8 +140,6 @@ for record in tqdm(list(data_pub.find_all("Record"))):
         time.sleep(3.5)
 
     fout.write(json.dumps(record_out, ensure_ascii=False) + "\n")
-    langs[lang] += 1
     stored_records += 1
 
 print("Total valid records:", stored_records)
-print("Language distribution:", langs.most_common())

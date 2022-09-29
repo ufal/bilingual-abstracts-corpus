@@ -22,5 +22,10 @@ Preprocessing authors
 Processing main publication file
 ...
 Total valid records: 2657
-Language distribution: [('en', 2086), ('cs', 548), ('ru', 13), ('de', 4), ('sk', 2), ('dsb', 2), ('fr', 1), ('lt', 1)]
 ```
+
+You can run `statistics.py` to get an overview for the dataset:
+
+- **Average sents (words) per abstract**: 4.0 (96.0)
+- **Total sents (words) (en)**:           11k (255k)
+- **Langs**:                              en 2086 (78.5%), cs 548 (20.6%), ru 13 (0.5%), ... (long tail of less-represented languages)
