@@ -19,12 +19,14 @@ with open(args.data, "r") as f:
 
 sent_counts = []
 word_counts = []
+has_s2_url = []
 langs = []
 
 for record in tqdm(data):
     sent_counts.append(len(sent_tokenize(record["abstract_en"])))
     word_counts.append(len(word_tokenize(record["abstract_en"])))
     langs.append(record["lang"])
+    has_s2_url.append("s2_url" in record)
 
 print(
     "Total records:", len(data)
@@ -41,3 +43,7 @@ print("Langs:", ", ".join([
     f"{l} {v} ({v/len(langs):.1%})"
     for l, v in Counter(langs).most_common()
 ]))
+print(
+    "Papers with S2 link:",
+    f"{np.average(has_s2_url):.1%}"
+)

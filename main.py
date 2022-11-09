@@ -3,12 +3,14 @@
 import json
 import re
 from bs4 import BeautifulSoup
-import semanticscholar
 from tqdm import tqdm
 import time
 import argparse
+from urllib.parse import quote
+import urllib.request
+import json
 
-ss = semanticscholar.SemanticScholar()
+
 re_collapse_whitespace = re.compile(" +")
 
 args = argparse.ArgumentParser()
@@ -22,9 +24,30 @@ args.add_argument(
     "-do", "--data-out", default="data/corpus.jsonl"
 )
 args.add_argument(
-    "-ss", "--semantic-scholar", action="store_true"
+    "-s2", "--semantic-scholar", action="store_true"
+)
+args.add_argument(
+    "-s2-key", "--semantic-scholar-key", default=None,
+)
+args.add_argument(
+    "--continue-from", type=int, default=1,
 )
 args = args.parse_args()
+
+if args.semantic_scholar_key:
+    s2_headers = {"x-api-key": args.semantic_scholar_key}
+else:
+    s2_headers = {}
+
+def s2_search(query, limit=30):
+    query = quote(query)
+    url_base = f"https://api.semanticscholar.org/graph/v1/paper/search?limit={limit}&fields=title,authors,paperId&query="
+    url = url_base + query
+    req = urllib.request.Request(url, headers=s2_headers)
+    data = urllib.request.urlopen(req)
+    data = data.read().decode("utf-8")
+    return json.loads(data)["data"]
+
 
 with open(args.data_publications, "r") as f:
     data_pub = BeautifulSoup(f.read(), "xml")
@@ -39,13 +62,12 @@ for record in tqdm(list(data_aut.find_all("Record"))):
     name_middle = record.find("Field", attrs={"Name": "MiddleName"}).text
     name_last = record.find("Field", attrs={"Name": "LastName"}).text
     name_all = re_collapse_whitespace.sub(
-        " ", f"{name_first} {name_middle} {name_last}")
+        " ",
+        f"{name_first} {name_middle} {name_last}"
+    )
     author_map[record["Id"]] = name_all
 
-# clean up file
-with open(args.data_out, "w"):
-    pass
-fout = open(args.data_out, "a")
+fout = open(args.data_out, "a" if args.continue_from != 1 else "w")
 
 LANG_MAP = {
     "cze": "cs",
@@ -62,7 +84,7 @@ stored_titles = set()
 stored_records = 0
 
 print("Processing main publication file")
-for record in tqdm(list(data_pub.find_all("Record"))):
+for record in tqdm(list(data_pub.find_all("Record"))[args.continue_from:]):
     record_out = {}
 
     # extract information from the XML
@@ -124,20 +146,24 @@ for record in tqdm(list(data_pub.find_all("Record"))):
 
     if args.semantic_scholar:
         title_en_hash = "".join([c for c in title_en.lower() if c.isalpha()])
-        for paper_other in ss.search_paper(title_en):
+        for paper_other in s2_search(title_en):
             title_hash_other = "".join(
-                [c for c in paper_other["title"].lower() if c.isalpha()])
+                [c for c in paper_other["title"].lower() if c.isalpha()]
+            )
             if title_hash_other == title_en_hash:
                 print(
-                    "Found a matching paper!",
-                    title_hash_other, title_en_hash
+                    "Found a matching paper:",
+                    title_en, paper_other["title"]
                 )
-                record_out["SemanticScholar_paperId"] = paper_other["paperId"]
+                record_out["s2_url"] = f'https://www.semanticscholar.org/paper/{paper_other["paperId"]}/'
                 break
 
         # delay to not trigger throttle
         # by default 100 per 5 minutes -> 20 per minute -> 3 per second
-        time.sleep(3.5)
+        if args.semantic_scholar_key is None:
+            time.sleep(3.5)
+        else:
+            time.sleep(1.0)
 
     fout.write(json.dumps(record_out, ensure_ascii=False) + "\n")
     stored_records += 1
