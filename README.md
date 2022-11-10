@@ -44,12 +44,9 @@ You can run `statistics.py` to get an overview for the dataset:
 
 ## Citation
 
-The corpus was created by [Rudolf Rosa](rosa@ufal.mff.cuni.cz) and [Vilém Zouhar](vzouhar@inf.ethz.ch).
+The corpus was created by [Rudolf Rosa](mailto:rosa@ufal.mff.cuni.cz) and [Vilém Zouhar](mailto:vzouhar@inf.ethz.ch).
 For citation, please use the following BibTeX entry:
 
 ```
 TODO
 ```
-
-<!-- LINDAT description -->
-<!-- This is a parallel corpus of Czech and mostly English abstracts of scientific papers and presentations published by authors from the Institute of Formal and Applied Linguistics, Charles University in Prague. For each publication record, the authors are obliged to provide both the original abstract (in Czech or English), and its translation (English or Czech) in the internal Biblio system. The data was filtered for duplicates and missing entries, ensuring that every record is bilingual. Additionally, records of published papers which are indexed by SemanticScholar contain the respective link. The dataset is stored in JSONL format, with each line corresponding to one record. -->
