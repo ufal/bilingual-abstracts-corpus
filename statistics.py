@@ -21,12 +21,14 @@ sent_counts = []
 word_counts = []
 has_s2_url = []
 langs = []
+years = []
 
 for record in tqdm(data):
     sent_counts.append(len(sent_tokenize(record["abstract_en"])))
     word_counts.append(len(word_tokenize(record["abstract_en"])))
     langs.append(record["lang"])
     has_s2_url.append("s2_url" in record)
+    years.append(int(record["year"]))
 
 print(
     "Total records:", len(data)
@@ -47,3 +49,9 @@ print(
     "Papers with S2 link:",
     f"{np.average(has_s2_url):.1%}"
 )
+
+print("Publication year:")
+print(", ".join([
+    f"{x[0]}: {x[1]}"
+    for x in sorted(Counter(years).most_common(), key=lambda x: x[0], reverse=True)
+]))

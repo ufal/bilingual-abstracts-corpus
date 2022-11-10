@@ -100,6 +100,7 @@ for record in tqdm(list(data_pub.find_all("Record"))[args.continue_from:]):
     title_orig = record.find("Field", attrs={"Name": "Title"}).text
     authors = record.find("Field", attrs={"Name": "Author"}).text.split(";")
 
+    # remove duplicates
     title_hash = f"{title_en}|{title_cs}|{title_orig}|{authors}|{abstract_en}|{abstract_cs}|{abstract_orig}"
     if title_hash in stored_titles:
         continue
@@ -152,18 +153,18 @@ for record in tqdm(list(data_pub.find_all("Record"))[args.continue_from:]):
             )
             if title_hash_other == title_en_hash:
                 print(
-                    "Found a matching paper:",
-                    title_en, paper_other["title"]
+                    "Found a matching paper |",
+                    title_en, "|", paper_other["title"]
                 )
                 record_out["s2_url"] = f'https://www.semanticscholar.org/paper/{paper_other["paperId"]}/'
                 break
 
         # delay to not trigger throttle
-        # by default 100 per 5 minutes -> 20 per minute -> 3 per second
+        # by default 100 per 5 minutes -> 20 per minute -> 3s per request
         if args.semantic_scholar_key is None:
-            time.sleep(3.5)
+            time.sleep(5.0)
         else:
-            time.sleep(1.0)
+            time.sleep(0.1)
 
     fout.write(json.dumps(record_out, ensure_ascii=False) + "\n")
     stored_records += 1
