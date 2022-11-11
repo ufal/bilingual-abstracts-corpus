@@ -6,10 +6,10 @@ The data was filtered for duplicates and missing entries, ensuring that every re
 Additionally, records of published papers which are indexed by SemanticScholar contain the respective link.
 The dataset was created from September 2022 image of the Biblio database and is stored in JSONL format, with each line corresponding to one record.
 
-You can download the dataset [here on Lindat](TODO) or directly from the command-line:
+You can download the dataset [here on Lindat](https://lindat.mff.cuni.cz/repository/xmlui/handle/11234/1-4922) or directly from the command-line:
 
 ```
-wget TODO
+wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-4922/corpus.json
 ```
 
 ## Reproducing the dataset
@@ -45,8 +45,16 @@ You can run `statistics.py` to get an overview for the dataset:
 ## Citation
 
 The corpus was created by [Rudolf Rosa](mailto:rosa@ufal.mff.cuni.cz) and [Vilém Zouhar](mailto:vzouhar@inf.ethz.ch).
+Contact the authors if you are experiencing any difficulties while using this dataset or have any related questions. 
 For citation, please use the following BibTeX entry:
 
 ```
-TODO
+@misc{11234/1-4922,
+    title = {Czech and English abstracts of {{\'U}FAL} papers (2022-11-11)},
+    author = {Rosa, Rudolf and Zouhar, Vil{\'e}m},
+    url = {http://hdl.handle.net/11234/1-4922},
+    note = {{LINDAT}/{CLARIAH}-{CZ} digital library at the Institute of Formal and Applied Linguistics ({{\'U}FAL}), Faculty of Mathematics and Physics, Charles University},
+    copyright = {Creative Commons - Attribution 4.0 International ({CC} {BY} 4.0)},
+    year = {2022}
+}
 ```
