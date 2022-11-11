@@ -9,7 +9,7 @@ The dataset was created from September 2022 image of the Biblio database and is 
 You can download the dataset [here on Lindat](https://lindat.mff.cuni.cz/repository/xmlui/handle/11234/1-4922) or directly from the command-line:
 
 ```
-wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-4922/corpus.json
+wget https://lindat.mff.cuni.cz/repository/xmlui/bitstream/handle/11234/1-4922/corpus.jsonl
 ```
 
 ## Reproducing the dataset
